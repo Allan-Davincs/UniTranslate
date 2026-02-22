@@ -15,7 +15,7 @@ DEEPL_URL = "https://api-free.deepl.com/v2/translate"
 def send_static(path):
     return send_from_directory('static', path)
 
-# Serve service worker from root scope
+# Serve service worker from root scope (required for PWA)
 @app.route('/sw.js')
 def service_worker():
     return send_from_directory('static/js', 'sw.js')

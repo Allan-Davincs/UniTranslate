@@ -14,10 +14,48 @@ const themeSelect = document.getElementById('themeSelect');
 const emailInput = document.getElementById('emailInput');
 const saveSettings = document.getElementById('saveSettings');
 const supportBtn = document.getElementById('supportBtn');
+const installBtn = document.getElementById('installBtn');
 
 let currentTranslation = '';
 
-// Load settings from localStorage
+// ----- PWA Install Logic -----
+let deferredPrompt;
+
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Show the install button
+    installBtn.style.display = 'block';
+});
+
+// When the install button is clicked
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+        alert('App is already installed or not installable.');
+        installBtn.style.display = 'none';
+        return;
+    }
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user's response
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to install prompt: ${outcome}`);
+    // Clear the prompt and hide the button
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// If the app is installed, hide the button
+window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed.');
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// ----- Settings & Theme -----
 function loadSettings() {
     const theme = localStorage.getItem('theme') || 'light';
     const email = localStorage.getItem('email') || '';
@@ -27,37 +65,32 @@ function loadSettings() {
 }
 loadSettings();
 
-// Save settings
 saveSettings.addEventListener('click', () => {
     const theme = themeSelect.value;
     const email = emailInput.value;
     localStorage.setItem('theme', theme);
     localStorage.setItem('email', email);
     document.body.className = theme === 'dark' ? 'dark-theme' : '';
-    // Optionally show a toast/saved message
     alert('Settings saved!');
 });
 
-// Open settings (show settings view, hide main view)
 settingsBtn.addEventListener('click', () => {
     mainView.style.display = 'none';
     settingsView.classList.remove('hidden');
     settingsView.classList.add('visible');
 });
 
-// Back to main translator
 backBtn.addEventListener('click', () => {
     mainView.style.display = 'block';
     settingsView.classList.remove('visible');
     settingsView.classList.add('hidden');
 });
 
-// Support button - open email client
 supportBtn.addEventListener('click', () => {
     window.location.href = 'mailto:allandavincs89@gmail.com?subject=UniTranslate%20Support';
 });
 
-// Translation
+// ----- Translation -----
 translateBtn.addEventListener('click', async () => {
     const text = inputText.value.trim();
     if (!text) {
@@ -95,7 +128,7 @@ translateBtn.addEventListener('click', async () => {
     }
 });
 
-// Text-to-speech
+// ----- Text-to-Speech -----
 speakBtn.addEventListener('click', () => {
     if (!currentTranslation) return;
     window.speechSynthesis.cancel();
@@ -113,47 +146,7 @@ stopSpeakBtn.addEventListener('click', () => {
     window.speechSynthesis.cancel();
 });
 
-// Disable speak button when input changes
+// Disable speak when input changes
 inputText.addEventListener('input', () => speakBtn.disabled = true);
 sourceLang.addEventListener('change', () => speakBtn.disabled = true);
 targetLang.addEventListener('change', () => speakBtn.disabled = true);
-
-// Install PWA logic
-let deferredPrompt;
-const installBtn = document.getElementById('installBtn');
-
-// Listen for the beforeinstallprompt event
-window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent the mini-infobar from appearing on mobile
-    e.preventDefault();
-    // Stash the event so it can be triggered later.
-    deferredPrompt = e;
-    // Show the install button
-    installBtn.style.display = 'block';
-});
-
-// When the install button is clicked
-installBtn.addEventListener('click', async () => {
-    if (!deferredPrompt) {
-        // The prompt might not be available if the app is already installed
-        // or if the event didn't fire.
-        alert('App is already installed or not installable.');
-        installBtn.style.display = 'none';
-        return;
-    }
-    // Show the install prompt
-    deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log(`User response to install prompt: ${outcome}`);
-    // We've used the prompt; clear it and hide the button
-    deferredPrompt = null;
-    installBtn.style.display = 'none';
-});
-
-// Optional: You can hide the button if the app is successfully installed
-window.addEventListener('appinstalled', () => {
-    console.log('PWA was installed.');
-    deferredPrompt = null;
-    installBtn.style.display = 'none';
-});
