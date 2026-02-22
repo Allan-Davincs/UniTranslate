@@ -10,12 +10,10 @@ app = Flask(__name__)
 DEEPL_API_KEY = os.getenv('DEEPL_API_KEY')
 DEEPL_URL = "https://api-free.deepl.com/v2/translate"
 
-# Serve static files
 @app.route('/static/<path:path>')
 def send_static(path):
     return send_from_directory('static', path)
 
-# Serve service worker from root scope (required for PWA)
 @app.route('/sw.js')
 def service_worker():
     return send_from_directory('static/js', 'sw.js')
@@ -46,8 +44,11 @@ def translate():
         response = requests.post(DEEPL_URL, json=payload, headers=headers)
         response.raise_for_status()
         result = response.json()
-        translation = result['translations'][0]['text']
-        return jsonify({'translation': translation})
+        translation_data = result['translations'][0]
+        response_data = {'translation': translation_data['text']}
+        if 'detected_source_language' in translation_data:
+            response_data['detected_source_language'] = translation_data['detected_source_language']
+        return jsonify(response_data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

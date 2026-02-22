@@ -3,23 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UniTranslate</title>
+    <title data-i18n="title">UniTranslate</title>
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/css/style.css">
     <meta name="theme-color" content="#6a11cb">
     <link rel="apple-touch-icon" href="/static/images/icon-192.png">
-    <!-- Google Font for better typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="app-container">
-        <!-- Header with logo and settings icon -->
+        <!-- Header -->
         <header>
             <div class="logo">
                 <span class="logo-icon">🌐</span>
-                <h1>UniTranslate</h1>
+                <h1 data-i18n="title">UniTranslate</h1>
             </div>
             <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
         </header>
@@ -27,7 +26,10 @@
         <!-- Main translator view -->
         <main id="mainView">
             <div class="card">
-                <textarea id="inputText" placeholder="Enter text to translate..." rows="4"></textarea>
+                <div style="position: relative;">
+                    <textarea id="inputText" data-i18n-placeholder="inputPlaceholder" placeholder="Enter text to translate..." rows="4"></textarea>
+                    <button id="voiceBtn" class="voice-btn" aria-label="Speak">🎤</button>
+                </div>
 
                 <div class="lang-selectors">
                     <select id="sourceLang">
@@ -42,7 +44,6 @@
                         <option value="ZH">Chinese</option>
                         <option value="JA">Japanese</option>
                     </select>
-
                     <select id="targetLang">
                         <option value="ES">Spanish</option>
                         <option value="FR">French</option>
@@ -56,54 +57,74 @@
                     </select>
                 </div>
 
-                <button id="translateBtn" class="primary-btn">Translate</button>
+                <button id="translateBtn" class="primary-btn" data-i18n="translate">Translate</button>
 
-                <div id="result" class="result-box"></div>
+                <div class="result-box" id="result"></div>
+                <button id="shareBtn" class="share-btn" style="display: none;" data-i18n="share">📤 Share</button>
 
                 <div class="action-buttons">
-                    <button id="speakBtn" disabled>🔊 Speak</button>
-                    <button id="stopSpeakBtn">⏹️ Stop</button>
+                    <button id="speakBtn" disabled data-i18n="speak">🔊 Speak</button>
+                    <button id="stopSpeakBtn" data-i18n="stop">⏹️ Stop</button>
                 </div>
             </div>
         </main>
 
-        <!-- Settings view (slides in) -->
+        <!-- Settings view -->
         <div id="settingsView" class="settings-view hidden">
             <div class="settings-header">
                 <button id="backBtn" class="icon-btn">←</button>
-                <h2>Settings</h2>
+                <h2 data-i18n="settings">Settings</h2>
             </div>
             <div class="settings-content">
                 <div class="setting-item">
-                    <label>Theme</label>
+                    <label data-i18n="theme">Theme</label>
                     <select id="themeSelect">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
+                        <option value="light" data-i18n="light">Light</option>
+                        <option value="dark" data-i18n="dark">Dark</option>
                     </select>
                 </div>
                 <div class="setting-item">
-                    <label>Email (for support)</label>
+                    <label data-i18n="textSize">Text Size</label>
+                    <input type="range" id="textSizeSlider" min="12" max="32" value="16">
+                </div>
+                <div class="setting-item">
+                    <label data-i18n="uiLanguage">Language</label>
+                    <select id="uiLangSelect">
+                        <option value="en">English</option>
+                        <option value="es">Español</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <label data-i18n="email">Email (for support)</label>
                     <input type="email" id="emailInput" placeholder="your@email.com">
                 </div>
                 <div class="setting-item">
-                    <label>Help & Support</label>
-                    <button id="supportBtn" class="secondary-btn">📧 Contact Support</button>
+                    <label data-i18n="support">Help & Support</label>
+                    <button id="supportBtn" class="secondary-btn">📧 <span data-i18n="support">Contact Support</span></button>
                 </div>
-                <!-- INSTALL APP BUTTON (initially hidden) -->
-                <button id="installBtn" class="primary-btn" style="display: none;">📲 Install App</button>
-                <button id="saveSettings" class="primary-btn">Save Settings</button>
+                <button id="installBtn" class="primary-btn" style="display: none;" data-i18n="install">📲 Install App</button>
+                <button id="saveSettings" class="primary-btn" data-i18n="save">Save Settings</button>
             </div>
         </div>
 
-        <!-- Footer -->
+        <!-- History modal (optional) – we'll include a button to open it -->
+        <button id="showHistoryBtn" class="history-fab" title="History">📜</button>
+        <div id="historyModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 data-i18n="history">Translation History</h2>
+                <ul id="historyList"></ul>
+            </div>
+        </div>
+
         <footer>
-            <p>copyright  DAVINCSTECH &copy; 2026</p>
+            <p>Powered by DeepL</p>
         </footer>
     </div>
 
-    <script src="/static/js/app.js"></script>
+    <!-- Scripts (type="module" for import/export) -->
+    <script type="module" src="/static/js/app.js"></script>
     <script>
-        // Register service worker from root scope
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
                 .then(reg => console.log('SW registered', reg))
