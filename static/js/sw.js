@@ -1,4 +1,4 @@
-const CACHE_NAME = 'unitranslate-v2'; // increment version when updating
+const CACHE_NAME = 'unitranslate-v3'; // increment when updating
 const urlsToCache = [
     '/',
     '/static/css/style.css',
