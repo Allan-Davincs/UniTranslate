@@ -117,3 +117,43 @@ stopSpeakBtn.addEventListener('click', () => {
 inputText.addEventListener('input', () => speakBtn.disabled = true);
 sourceLang.addEventListener('change', () => speakBtn.disabled = true);
 targetLang.addEventListener('change', () => speakBtn.disabled = true);
+
+// Install PWA logic
+let deferredPrompt;
+const installBtn = document.getElementById('installBtn');
+
+// Listen for the beforeinstallprompt event
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent the mini-infobar from appearing on mobile
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+    // Show the install button
+    installBtn.style.display = 'block';
+});
+
+// When the install button is clicked
+installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+        // The prompt might not be available if the app is already installed
+        // or if the event didn't fire.
+        alert('App is already installed or not installable.');
+        installBtn.style.display = 'none';
+        return;
+    }
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to install prompt: ${outcome}`);
+    // We've used the prompt; clear it and hide the button
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
+
+// Optional: You can hide the button if the app is successfully installed
+window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed.');
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+});
