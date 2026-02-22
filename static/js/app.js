@@ -1,4 +1,8 @@
 // DOM elements
+const mainView = document.getElementById('mainView');
+const settingsView = document.getElementById('settingsView');
+const settingsBtn = document.getElementById('settingsBtn');
+const backBtn = document.getElementById('backBtn');
 const translateBtn = document.getElementById('translateBtn');
 const speakBtn = document.getElementById('speakBtn');
 const stopSpeakBtn = document.getElementById('stopSpeakBtn');
@@ -6,12 +10,10 @@ const inputText = document.getElementById('inputText');
 const sourceLang = document.getElementById('sourceLang');
 const targetLang = document.getElementById('targetLang');
 const resultDiv = document.getElementById('result');
-const settingsBtn = document.getElementById('settingsBtn');
-const modal = document.getElementById('settingsModal');
-const closeModal = document.querySelector('.close');
 const themeSelect = document.getElementById('themeSelect');
 const emailInput = document.getElementById('emailInput');
 const saveSettings = document.getElementById('saveSettings');
+const supportBtn = document.getElementById('supportBtn');
 
 let currentTranslation = '';
 
@@ -32,19 +34,34 @@ saveSettings.addEventListener('click', () => {
     localStorage.setItem('theme', theme);
     localStorage.setItem('email', email);
     document.body.className = theme === 'dark' ? 'dark-theme' : '';
-    modal.style.display = 'none';
+    // Optionally show a toast/saved message
+    alert('Settings saved!');
 });
 
-// Modal handling
-settingsBtn.onclick = () => modal.style.display = 'block';
-closeModal.onclick = () => modal.style.display = 'none';
-window.onclick = (e) => { if (e.target == modal) modal.style.display = 'none'; };
+// Open settings (show settings view, hide main view)
+settingsBtn.addEventListener('click', () => {
+    mainView.style.display = 'none';
+    settingsView.classList.remove('hidden');
+    settingsView.classList.add('visible');
+});
+
+// Back to main translator
+backBtn.addEventListener('click', () => {
+    mainView.style.display = 'block';
+    settingsView.classList.remove('visible');
+    settingsView.classList.add('hidden');
+});
+
+// Support button - open email client
+supportBtn.addEventListener('click', () => {
+    window.location.href = 'mailto:allandavincs89@gmail.com?subject=UniTranslate%20Support';
+});
 
 // Translation
 translateBtn.addEventListener('click', async () => {
     const text = inputText.value.trim();
     if (!text) {
-        resultDiv.innerHTML = '<span class="error">Enter text</span>';
+        resultDiv.innerHTML = '<span class="error">Please enter text</span>';
         return;
     }
     if (!targetLang.value) {
@@ -74,7 +91,7 @@ translateBtn.addEventListener('click', async () => {
             resultDiv.innerHTML = `<span class="error">Error: ${data.error}</span>`;
         }
     } catch (err) {
-        resultDiv.innerHTML = `<span class="error">Network error</span>`;
+        resultDiv.innerHTML = '<span class="error">Network error</span>';
     }
 });
 
@@ -83,7 +100,6 @@ speakBtn.addEventListener('click', () => {
     if (!currentTranslation) return;
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(currentTranslation);
-    // Map target language to BCP 47
     const langMap = {
         'EN': 'en-US', 'FR': 'fr-FR', 'DE': 'de-DE',
         'ES': 'es-ES', 'IT': 'it-IT', 'PT': 'pt-PT',
@@ -97,7 +113,7 @@ stopSpeakBtn.addEventListener('click', () => {
     window.speechSynthesis.cancel();
 });
 
-// Disable speak when input changes
+// Disable speak button when input changes
 inputText.addEventListener('input', () => speakBtn.disabled = true);
 sourceLang.addEventListener('change', () => speakBtn.disabled = true);
 targetLang.addEventListener('change', () => speakBtn.disabled = true);

@@ -1,11 +1,11 @@
-const CACHE_NAME = 'unitranslate-v1';
+const CACHE_NAME = 'unitranslate-v2'; // increment version when updating
 const urlsToCache = [
     '/',
     '/static/css/style.css',
     '/static/js/app.js',
     '/static/manifest.json',
     '/static/images/icon-192.png',
-    // add other assets
+    '/static/images/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

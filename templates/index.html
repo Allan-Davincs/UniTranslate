@@ -6,78 +6,104 @@
     <title>UniTranslate</title>
     <link rel="manifest" href="/static/manifest.json">
     <link rel="stylesheet" href="/static/css/style.css">
-    <meta name="theme-color" content="#4CAF50">
+    <meta name="theme-color" content="#6a11cb">
     <link rel="apple-touch-icon" href="/static/images/icon-192.png">
+    <!-- Optional: include a font for better typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
+    <div class="app-container">
+        <!-- Header with logo and settings icon -->
         <header>
-            <h1>🌐 UniTranslate</h1>
-            <button id="settingsBtn" class="icon-btn">⚙️</button>
+            <div class="logo">
+                <span class="logo-icon">🌐</span>
+                <h1>UniTranslate</h1>
+            </div>
+            <button id="settingsBtn" class="icon-btn" aria-label="Settings">⚙️</button>
         </header>
 
-        <main>
-            <textarea id="inputText" placeholder="Enter text to translate" rows="4"></textarea>
+        <!-- Main translator view -->
+        <main id="mainView">
+            <div class="card">
+                <textarea id="inputText" placeholder="Enter text to translate..." rows="4"></textarea>
 
-            <div class="lang-selectors">
-                <select id="sourceLang">
-                    <option value="">Auto-detect</option>
-                    <option value="EN">English</option>
-                    <option value="FR">French</option>
-                    <option value="DE">German</option>
-                    <option value="ES">Spanish</option>
-                    <option value="IT">Italian</option>
-                    <option value="PT">Portuguese</option>
-                    <option value="RU">Russian</option>
-                    <option value="ZH">Chinese</option>
-                    <option value="JA">Japanese</option>
-                </select>
+                <div class="lang-selectors">
+                    <select id="sourceLang">
+                        <option value="">Auto-detect</option>
+                        <option value="EN">English</option>
+                        <option value="FR">French</option>
+                        <option value="DE">German</option>
+                        <option value="ES">Spanish</option>
+                        <option value="IT">Italian</option>
+                        <option value="PT">Portuguese</option>
+                        <option value="RU">Russian</option>
+                        <option value="ZH">Chinese</option>
+                        <option value="JA">Japanese</option>
+                    </select>
 
-                <select id="targetLang">
-                    <option value="ES">Spanish</option>
-                    <option value="FR">French</option>
-                    <option value="DE">German</option>
-                    <option value="EN">English</option>
-                    <!-- add more as needed -->
-                </select>
-            </div>
+                    <select id="targetLang">
+                        <option value="ES">Spanish</option>
+                        <option value="FR">French</option>
+                        <option value="DE">German</option>
+                        <option value="EN">English</option>
+                        <option value="IT">Italian</option>
+                        <option value="PT">Portuguese</option>
+                        <option value="RU">Russian</option>
+                        <option value="ZH">Chinese</option>
+                        <option value="JA">Japanese</option>
+                    </select>
+                </div>
 
-            <button id="translateBtn">Translate</button>
+                <button id="translateBtn" class="primary-btn">Translate</button>
 
-            <div id="result"></div>
+                <div id="result" class="result-box"></div>
 
-            <div class="action-buttons">
-                <button id="speakBtn" disabled>🔊 Speak</button>
-                <button id="stopSpeakBtn">⏹️ Stop</button>
+                <div class="action-buttons">
+                    <button id="speakBtn" disabled>🔊 Speak</button>
+                    <button id="stopSpeakBtn">⏹️ Stop</button>
+                </div>
             </div>
         </main>
 
-        <!-- Settings Modal -->
-        <div id="settingsModal" class="modal">
-            <div class="modal-content">
-                <span class="close">&times;</span>
+        <!-- Settings view (slides in) -->
+        <div id="settingsView" class="settings-view hidden">
+            <div class="settings-header">
+                <button id="backBtn" class="icon-btn">←</button>
                 <h2>Settings</h2>
+            </div>
+            <div class="settings-content">
                 <div class="setting-item">
-                    <label>Theme:</label>
+                    <label>Theme</label>
                     <select id="themeSelect">
                         <option value="light">Light</option>
                         <option value="dark">Dark</option>
                     </select>
                 </div>
                 <div class="setting-item">
-                    <label>Email:</label>
+                    <label>Email (for support)</label>
                     <input type="email" id="emailInput" placeholder="your@email.com">
                 </div>
-                <button id="saveSettings">Save</button>
+                <div class="setting-item">
+                    <label>Help & Support</label>
+                    <button id="supportBtn" class="secondary-btn">📧 Contact Support</button>
+                </div>
+                <button id="saveSettings" class="primary-btn">Save Settings</button>
             </div>
         </div>
+
+        <!-- Footer (optional) -->
+        <footer>
+            <p>Powered by DeepL</p>
+        </footer>
     </div>
 
     <script src="/static/js/app.js"></script>
     <script>
-        // Register service worker
+        // Register service worker at root scope
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/static/js/sw.js')
+            navigator.serviceWorker.register('/sw.js')
                 .then(reg => console.log('SW registered', reg))
                 .catch(err => console.log('SW registration failed', err));
         }
